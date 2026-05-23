@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import sys; sys.path.insert\\(0, '.'\\); from backend import GameAPI; print\\('✓ 后端模块导入成功'\\)\")",
+      "Bash(python -c \"import sys; sys.path.insert\\(0, '.'\\); from backend import GameAPI; print\\('Backend module imported successfully'\\)\")",
+      "Bash(timeout 3 python main.py)",
+      "Bash(python test_fix.py)"
+    ]
+  }
+}
