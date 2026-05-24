@@ -137,8 +137,8 @@ class SaveLoadUI:
     def _draw_slots(self, px, py, pw, ph):
         """绘制槽位列表"""
         list_y = py + int(ph * 0.18)
-        slot_height = int(ph * 0.07)
-        slot_spacing = int(ph * 0.01)
+        slot_height = int(ph * 0.072)  # 增加槽位高度（从7%增加到7.2%）
+        slot_spacing = int(ph * 0.013)  # 增加间距（从1%增加到1.3%）
 
         self.slot_rects = {}
 
@@ -170,10 +170,10 @@ class SaveLoadUI:
             # 槽位信息
             text_color = (255, 255, 255) if self.hovered_slot == slot_id else self.renderer.colors["text_color"]
 
-            # 槽位编号
+            # 槽位编号 - 左侧
             self.renderer.draw_text(
                 f"槽位 {slot_id}",
-                rect.x + int(rect.width * 0.12),
+                rect.x + int(rect.width * 0.10),
                 rect.centery,
                 "medium",
                 text_color,
@@ -185,28 +185,39 @@ class SaveLoadUI:
                 game_time = slot.get("game_time", 0)
                 save_time = slot.get("save_time", "")
 
-                # 游戏时间
+                # 游戏时间 - 中间偏左
                 hours = int(game_time // 3600)
                 minutes = int((game_time % 3600) // 60)
-                time_text = f"游戏时间：{hours}h {minutes}m"
+                time_text = f"{hours}h {minutes}m"  # 简化文字，去掉"游戏时间："
 
                 self.renderer.draw_text(
                     time_text,
-                    rect.x + int(rect.width * 0.45),
+                    rect.x + int(rect.width * 0.40),
                     rect.centery,
                     "small",
                     text_color,
                     align="left"
                 )
 
-                # 保存时间
+                # 保存时间 - 右侧，使用右对齐
                 if save_time:
-                    # 提取日期时间（去掉毫秒）
+                    # 提取日期时间（去掉毫秒），并简化格式
                     save_time_str = save_time.split('.')[0] if '.' in save_time else save_time
+                    # 如果太长，只显示日期和时间，去掉秒
+                    if len(save_time_str) > 16:
+                        try:
+                            # 格式：2024-01-01 12:00:00 -> 2024-01-01 12:00
+                            parts = save_time_str.split(' ')
+                            if len(parts) == 2:
+                                date_part = parts[0]
+                                time_parts = parts[1].split(':')
+                                save_time_str = f"{date_part} {time_parts[0]}:{time_parts[1]}"
+                        except:
+                            pass
 
                     self.renderer.draw_text(
                         save_time_str,
-                        rect.x + int(rect.width * 0.88),
+                        rect.x + int(rect.width * 0.95),
                         rect.centery,
                         "small",
                         text_color,
@@ -219,7 +230,7 @@ class SaveLoadUI:
                     rect.centery,
                     "medium",
                     self.renderer.colors["disabled_color"],
-                    align="left"
+                    align="center"
                 )
 
             self.slot_rects[slot_id] = rect

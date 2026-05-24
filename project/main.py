@@ -3,6 +3,8 @@
 项目入口文件
 """
 import sys
+sys.dont_write_bytecode = True  # 禁止生成 __pycache__
+
 from pathlib import Path
 
 # 添加项目根目录到路径

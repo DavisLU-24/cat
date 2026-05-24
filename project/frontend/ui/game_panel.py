@@ -116,27 +116,30 @@ class GamePanel:
         width = self.renderer.width
         height = self.renderer.height
 
-        # 食物区域
+        # 食物区域 - 扩大区域宽度
         area_x = int(width * self.food_area_left)
-        area_width = int(width * self.food_area_width)
+        area_width = int(width * 0.25)  # 从20%增加到25%
         area_y = int(height * 0.25)  # 从 25% 高度开始
         area_height = int(height * 0.60)  # 占 60% 高度
 
-        # 网格：3 列 × 多行
-        cols = 3
+        # 网格：2 列 × 多行（从3列改为2列，避免格子太小）
+        cols = 2
         cell_width = area_width // cols
-        cell_height = int(height * 0.12)  # 每格高度
-        padding = int(min(width, height) * 0.01)  # 间距
+        cell_height = int(height * 0.16)  # 进一步增加每格高度
+
+        # 水平和垂直间距
+        h_padding = int(width * 0.012)
+        v_padding = int(height * 0.012)
 
         grid = []
         for i, food in enumerate(self.foods):
             row = i // cols
             col = i % cols
 
-            x = area_x + col * cell_width + padding
-            y = area_y + row * cell_height + padding
-            w = cell_width - 2 * padding
-            h = cell_height - 2 * padding
+            x = area_x + col * cell_width + h_padding
+            y = area_y + row * cell_height + v_padding
+            w = cell_width - 2 * h_padding
+            h = cell_height - 2 * v_padding
 
             grid.append(pygame.Rect(x, y, w, h))
 
@@ -212,8 +215,8 @@ class GamePanel:
         status = self.cat_status.get("status", "idle")
         self.renderer.draw_cat(status, cat_x, cat_y, cat_size)
 
-        # 能量条
-        bar_width = int(width * 0.50)
+        # 能量条 - 减小宽度避免与右侧按钮重叠
+        bar_width = int(width * 0.38)  # 从50%减小到38%
         bar_height = int(height * 0.045)
         bar_x = (width - bar_width) // 2
         bar_y = int(height * 0.60)

@@ -358,55 +358,98 @@ class TravelUI:
         )
 
         # 奖励展示
-        reward_y = py + int(ph * 0.50)
+        reward_title_y = py + int(ph * 0.50)
 
         self.renderer.draw_text(
             "获得奖励：",
             px + pw // 2,
-            reward_y,
+            reward_title_y,
             "large",
             self.renderer.colors["text_color"]
         )
 
+        # 计算奖励区域的实际高度，用于动态调整返回按钮位置
+        reward_bottom_y = reward_title_y + int(ph * 0.10)  # 默认值
+
         # 奖励物品
         if self.rewards:
-            item_size = int(min(pw, ph) * 0.10)
-            item_spacing = int(pw * 0.03)
-            total_width = len(self.rewards) * item_size + (len(self.rewards) - 1) * item_spacing
-            start_x = px + (pw - total_width) // 2
+            item_size = int(min(pw, ph) * 0.12)
+            items_per_row = 2  # 每行2个物品
+
+            # 间距
+            h_spacing = int(pw * 0.15)
+            v_spacing = int(ph * 0.16)  # 稍微减小垂直间距，避免超出边界
+
+            reward_start_y = reward_title_y + int(ph * 0.10)
+
+            # 计算总行数
+            total_rows = (len(self.rewards) + items_per_row - 1) // items_per_row
 
             for i, item in enumerate(self.rewards):
-                x = start_x + i * (item_size + item_spacing)
-                y = reward_y + int(ph * 0.08)
+                # 计算当前是第几行第几列
+                row = i // items_per_row
+                col = i % items_per_row
 
+                # 计算当前行有多少个物品
+                items_in_current_row = min(items_per_row, len(self.rewards) - row * items_per_row)
+
+                # 计算当前行的总宽度
+                row_total_width = items_in_current_row * item_size + (items_in_current_row - 1) * h_spacing
+
+                # 当前行的起始X坐标（居中）
+                row_start_x = px + (pw - row_total_width) // 2
+
+                # 当前物品的X坐标
+                item_x = row_start_x + col * (item_size + h_spacing)
+
+                # 当前物品的Y坐标
+                item_y = reward_start_y + row * v_spacing
+
+                # 绘制物品图标
                 self.renderer.draw_item_icon(
                     item["type"],
-                    x, y,
+                    item_x, item_y,
                     item_size
                 )
 
                 # 物品名称
+                name_y = item_y + item_size + int(ph * 0.04)
+
                 self.renderer.draw_text(
                     item["name"],
-                    x + item_size // 2,
-                    y + item_size + int(ph * 0.03),
+                    item_x + item_size // 2,
+                    name_y,
                     "small",
                     self.renderer.colors["text_color"]
                 )
+
+            # 计算奖励区域的实际底部位置（最后一行的底部）
+            last_row = total_rows - 1
+            last_item_y = reward_start_y + last_row * v_spacing
+            last_name_y = last_item_y + item_size + int(ph * 0.04)
+            reward_bottom_y = last_name_y + int(ph * 0.03)  # 加上文字高度和小间距
         else:
+            # 无奖励的情况
+            no_reward_y = reward_title_y + int(ph * 0.10)
             self.renderer.draw_text(
                 "无奖励",
                 px + pw // 2,
-                reward_y + int(ph * 0.08),
+                no_reward_y,
                 "medium",
                 self.renderer.colors["text_color"]
             )
+            reward_bottom_y = no_reward_y + int(ph * 0.05)
 
-        # 返回按钮
+        # 返回按钮 - 动态位置，确保在奖励下方且不超出面板
         button_width = int(pw * 0.20)
         button_height = int(ph * 0.08)
+
+        # 计算按钮位置：奖励底部 + 间距，但不超过面板底部
+        min_button_y = reward_bottom_y + int(ph * 0.05)  # 奖励下方留5%间距
+        max_button_y = py + ph - button_height - int(ph * 0.08)  # 距离面板底部8%
+        return_y = min(min_button_y, max_button_y)
+
         return_x = px + (pw - button_width) // 2
-        return_y = py + ph - int(ph * 0.12)
 
         self.return_button_rect = self.renderer.draw_button(
             "返回",

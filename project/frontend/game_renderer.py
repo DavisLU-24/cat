@@ -391,19 +391,22 @@ class GameRenderer:
             border_radius=10
         )
 
-        # 文本
+        # 食物名称 - 上部显示，留足边距
+        name_y = y + int(height * 0.30)
         self.draw_text(
             food["name"],
             x + width // 2,
-            y + height // 3,
+            name_y,
             "small",
             self.colors["text_color"]
         )
 
+        # 能量值 - 下部显示，与名称保持足够间距
+        energy_y = y + int(height * 0.70)
         self.draw_text(
             f"+{food['energy_value']}",
             x + width // 2,
-            y + height * 2 // 3,
+            energy_y,
             "small",
             self.colors["success_color"]
         )
